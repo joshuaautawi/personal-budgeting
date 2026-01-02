@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { formatCents, parseMoneyToCents } from '../lib/money'
-import { getCurrentMonthKey, isInMonth } from '../lib/month'
+import { isInMonth } from '../lib/month'
 import type { Id, TransactionKind } from '../lib/types'
 import { Modal } from '../components/Modal'
 import { useAppStore } from '../store/AppStore'
@@ -14,11 +14,7 @@ export function Transactions(props: { month: string }) {
   const [addError, setAddError] = useState<string | null>(null)
 
   const [kind, setKind] = useState<TransactionKind>('expense')
-  const [date, setDate] = useState(() => {
-    // default to first of current month, but keep in selected month
-    const m = props.month || getCurrentMonthKey()
-    return `${m}-01`
-  })
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [amount, setAmount] = useState('')
   const [categoryId, setCategoryId] = useState<Id>('')
   const [note, setNote] = useState('')
@@ -41,8 +37,9 @@ export function Transactions(props: { month: string }) {
   )
 
   useEffect(() => {
-    // If the user changes the month selector, keep the default date inside that month.
-    if (!date.startsWith(props.month + '-')) setDate(`${props.month}-01`)
+    // Keep default aligned to "today" (even if user is viewing a different month).
+    const today = new Date().toISOString().slice(0, 10)
+    if (date !== today) setDate(today)
   }, [props.month, date])
 
   const allCategories = state.categories
@@ -101,7 +98,7 @@ export function Transactions(props: { month: string }) {
             onClick={() => {
               setAddError(null)
               setKind('expense')
-              setDate(`${props.month}-01`)
+              setDate(new Date().toISOString().slice(0, 10))
               setAmount('')
               setCategoryId('' as Id)
               setNote('')
