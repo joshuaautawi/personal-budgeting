@@ -4,7 +4,7 @@ export function formatCents(cents: Cents): string {
   const dollars = cents / 100
   return dollars.toLocaleString(undefined, {
     style: 'currency',
-    currency: 'USD',
+    currency: 'Rp',
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   })
