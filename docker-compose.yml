@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-budgeting}
+      POSTGRES_USER: ${POSTGRES_USER:-budgeting}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-budgeting}
+    ports:
+      - "5410:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-budgeting} -d ${POSTGRES_DB:-budgeting}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    environment:
+      PORT: "8080"
+      DATABASE_URL: "postgres://${POSTGRES_USER:-budgeting}:${POSTGRES_PASSWORD:-budgeting}@postgres:5432/${POSTGRES_DB:-budgeting}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "7080:8080"
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  pgdata:
+
+
