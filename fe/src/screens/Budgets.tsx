@@ -23,6 +23,8 @@ export function Budgets(props: { month: string }) {
 
   const monthBudgets = useMemo(() => state.budgets.filter((b) => b.month === props.month), [state.budgets, props.month])
 
+  const totalBudgeted = useMemo(() => monthBudgets.reduce((sum, b) => sum + b.amountCents, 0), [monthBudgets])
+
   const rows = useMemo(() => {
     const byCat = new Map<Id, typeof monthBudgets[number]>()
     for (const b of monthBudgets) byCat.set(b.categoryId, b)
@@ -86,6 +88,10 @@ export function Budgets(props: { month: string }) {
         <div className="card__header">
           <div className="card__title">Budget Utilization</div>
           <div className="card__hint">Budget vs actual expense for the selected month.</div>
+        </div>
+
+        <div className="totals" style={{ marginBottom: 12 }}>
+          <div className="pill">Total budgeted: {formatCents(totalBudgeted)}</div>
         </div>
 
         {rows.length === 0 ? (
