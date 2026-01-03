@@ -21,7 +21,6 @@ export default function App() {
         <div className="topbar__left">
           <div className="brand">
             <div className="brand__name">Personal Budget</div>
-            <div className="brand__sub">Minimal budgeting & tracking</div>
           </div>
         </div>
 
@@ -73,11 +72,7 @@ export default function App() {
         {tab === 'categories' ? <Categories /> : null}
       </main>
 
-      <footer className="footer">
-        <div className="footer__hint">
-          Data is stored in your backend database (Postgres via the Go API).
-        </div>
-      </footer>
+    
     </div>
   )
 }
